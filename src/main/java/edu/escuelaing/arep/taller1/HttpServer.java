@@ -8,13 +8,14 @@ public class HttpServer {
     public static final int PORT = 35000;
     public static final String WEB_ROOT = "target/classes/webroot";
     private static String INDEX_PAGE_URI = "/notes.html";
+    private static boolean RUNNING = true;
 
     public static void startServer() {
-        running = true;
+        RUNNING = true;
     }
 
     public static void stopServer() {
-        running = false;
+        RUNNING = false;
     }
 
     public static void setIndexPageUri(String uri) {
@@ -23,7 +24,7 @@ public class HttpServer {
 
     public static void runServer() throws IOException, URISyntaxException {
         ServerSocket serverSocket = new ServerSocket(PORT);
-        while (running) {
+        while (RUNNING) {
             Socket clientSocket = null;
             clientSocket = serverSocket.accept();
 
@@ -50,7 +51,8 @@ public class HttpServer {
         serverSocket.close();
     }
 
-    private static boolean running = true;
+    
+
     public static void main(String[] args) throws IOException, URISyntaxException {
         HttpServer.runServer();
     }
@@ -115,13 +117,13 @@ public class HttpServer {
         return "text/plain";
     }
 
-private static byte[] readBytesFromFile(File file, int fileLength) throws IOException {
-    byte[] fileBytes = new byte[fileLength];
-    try (FileInputStream fileIn = new FileInputStream(file)) {
-        fileIn.read(fileBytes);
+    private static byte[] readBytesFromFile(File file, int fileLength) throws IOException {
+        byte[] fileBytes = new byte[fileLength];
+        try (FileInputStream fileIn = new FileInputStream(file)) {
+            fileIn.read(fileBytes);
+        }
+        return fileBytes;
     }
-    return fileBytes;
-}
 
     private static void printRequestHeaders(BufferedReader in) throws IOException {
         String inputLine;

@@ -1,14 +1,14 @@
-package edu.escuelaing.arep.taller1;
+package edu.escuelaing.arep.taller1.Model;
 
 import java.time.LocalDate;
 
 public class Note {
     private String title;
-    private String group;
+    private NoteGroups group;
     private String content;
     private LocalDate date;
 
-    public Note(String title, String group, String content, LocalDate date) {
+    public Note(String title, NoteGroups group, String content, LocalDate date) {
         this.title = title;
         this.group = group;
         this.content = content;
@@ -23,11 +23,11 @@ public class Note {
         this.title = title;
     }
 
-    public String getGroup() {
+    public NoteGroups getGroup() {
         return group;
     }
     
-    public void setGroup(String group) {
+    public void setGroup(NoteGroups group) {
         this.group = group;
     }
 
