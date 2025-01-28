@@ -4,6 +4,9 @@ import java.io.*;
 
 public class HttpServer {
 
+    public static final int PORT = 35000;
+    public static final String WEB_ROOT = "target/classes/webroot";
+
     public static void startServer(){
         running = true;
     }
@@ -12,33 +15,18 @@ public class HttpServer {
         running = false;
     }   
 
-    private static boolean running = true;
-    public static void main(String[] args) throws IOException, URISyntaxException {
-        ServerSocket serverSocket = null;
-
-        try {
-            serverSocket = new ServerSocket(35000);
-        } catch (IOException e) {
-            System.err.println("Could not listen on port: 35000.");
-            System.exit(1);
-        }
-
+    public static void runServer() throws IOException, URISyntaxException {
+        ServerSocket serverSocket  = new ServerSocket(PORT);
         while (running) {
-            Socket clientSocket = null;
-            try {
-                System.out.println("Listo para recibir ...");
-                clientSocket = serverSocket.accept();
-            } catch (IOException e) {
-                System.err.println("Accept failed.");
-                System.exit(1);
-            }
+            Socket clientSocket = null; 
+            clientSocket = serverSocket.accept();
 
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             String inputLine, outputLine;
 
             boolean isFirstLine = true;
-            String file = "";
+            String file = "";   
             while ((inputLine = in.readLine()) != null) {
                 if(isFirstLine){
                     file = inputLine.split(" ")[1];
@@ -117,6 +105,11 @@ public class HttpServer {
             clientSocket.close();
         }
         serverSocket.close();
+    }
+
+    private static boolean running = true;
+    public static void main(String[] args) throws IOException, URISyntaxException {
+        
     }
 
     private static String helloRestService(String path, String query){

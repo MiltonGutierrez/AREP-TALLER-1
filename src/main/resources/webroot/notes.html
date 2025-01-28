@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Notas</title>
+    <link rel="stylesheet" href="notes.css">
+</head>
+<body>
+    <h1>Crear Nota</h1>
+    <form id="noteForm">
+        <label for="title">Título</label>
+        <input type="text" id="title" name="title" placeholder="Ingresa el título" required>
+
+        <label for="group">Grupo</label>
+        <select id="group" name="group" required>
+            <option value="">Selecciona un grupo</option>
+            <option value="personal">Personal</option>
+            <option value="trabajo">Trabajo</option>
+            <option value="estudio">Estudio</option>
+        </select>
+
+        <label for="content">Contenido</label>
+        <textarea id="content" name="content" rows="5" placeholder="Escribe el contenido de la nota" required></textarea>
+
+        <button type="submit">Guardar Nota</button>
+    </form>
+
+    <script src="notes.js"></script>
+</body>
+</html>
