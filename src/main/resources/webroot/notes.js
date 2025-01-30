@@ -39,11 +39,13 @@ const notes = (() => {
     const addNote = async (title, group, content) => {
         try {
             if(!title || !group || !content) {
+                alert('All fields are required');
                 throw new Error('All fields are required');
             }
             await api.addNote(title, group, content);
+            alert('Note added');
         } catch (error) {
-            console.error(error.responseJSON.error);
+            console.error(error);
         }
      };
 
