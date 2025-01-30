@@ -25,10 +25,10 @@
         <label for="content">Contenido</label>
         <textarea id="content" name="content" rows="5" placeholder="Escribe el contenido de la nota" required></textarea>
         <button type="button" onclick="notes.addNote(document.getElementById('title').value,document.getElementById('group').value, document.getElementById('content').value)">Guardar Nota</button>
-        <button type="button" id="showNotesButton">Mostrar Notas</button>
+        <button type="button" id="showNotesButton", onclick="notes.getNotes()">Mostrar Notas</button>
     </form>
 
-    <div id="notesContainer" style="margin-top: 20px;"></div>
+    <div id="notesContainer"></div>
 
     <script src ="apiClient.js"></script>
     <script src="notes.js"></script>

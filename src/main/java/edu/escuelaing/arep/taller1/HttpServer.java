@@ -56,17 +56,12 @@ public class HttpServer {
         
 
         if (httpVerb.equals("GET") && !resource.startsWith("/app")) {
-            System.out.println("Peticiones de archivos");
             handleGetRequests(resource, out, dataOut);
         } else if(httpVerb.equals("GET") && resource.startsWith("/app")){
-            System.out.println("Peticiones de la aplicacion");
-            printRequestHeaders(in);
             handleAppGetRequests(resource, out);
 
         } else if (httpVerb.equals("POST") && resource.startsWith("/app")) {
-            System.out.println("Peticiones de la aplicacion POST");
-            printRequestHeaders(in);
-            HandleAppPostRequests(URI.create(resource).getQuery(), out);
+            handleAppPostRequests(URI.create(resource).getQuery(), out);
         } else {
             out.println("HTTP/1.1 400 Bad Request");
             out.println("Content-Type: text/html");
@@ -80,13 +75,11 @@ public class HttpServer {
     }
 
     private static void handleAppGetRequests(String resource, PrintWriter out) throws IOException {
-        
-        //String response = noteController.getNotes();
-        //out.print(response);
+       String response = noteController.getNotes();
+        out.print(response);
     }
 
-    private static void HandleAppPostRequests(String query, PrintWriter out) throws IOException {
-        System.out.println(query);
+    private static void handleAppPostRequests(String query, PrintWriter out) throws IOException {
         String response = noteController.addNote(query);
         out.print(response);
     }
