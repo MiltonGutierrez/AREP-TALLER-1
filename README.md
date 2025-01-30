@@ -1,73 +1,105 @@
-# Taller 1 AREP 2025-1
+### Escuela Colombiana de Ingeniería
 
-One Paragraph of project description goes here
+### Arquitectura Empresarial - AREP
 
-## Getting Started
+#  TALLER DISEÑO Y ESTRUCTURACIÓN DE APLICACIONES DISTRIBUIDAS EN INTERNET
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+Este taller consiste en la creación de un servidor web básico en Java, sin el uso de frameworks como Spark o Spring. El servidor debe manejar múltiples solicitudes de forma secuencial (no concurrente), leer archivos del sistema local y responder con contenido estático como páginas HTML, archivos JavaScript, CSS e imágenes. Además, incorpora servicios REST en el backend para comunicación asíncrona con una aplicación web.
 
-### Prerequisites
+## Empezando
 
-What things you need to install the software and how to install them
+Estas instrucciones te permitirán obtener una copia del proyecto y ejecutarlo en tu máquina local para propósitos de desarrollo y pruebas.
 
-```
-Give examples
-```
+### Prerequisitos
 
-### Installing
+- Java 8 o superior
+- Maven 3.x
+- Acceso a una terminal.
 
-A step by step series of examples that tell you how to get a development env running
+### Instalando
 
-Say what the step will be
+Pasos para configurar el entorno de desarrollo:
 
-```
-Give the example
-```
+1. Clona el repositorio del proyecto:
 
-And repeat
+   ```bash
+   git clone https://github.com/MiltonGutierrez/taller1-arep.git
+   cd taller1-arep
+   ```
 
-```
-until finished
-```
+2. Compila el proyecto usando Maven:
 
-End with an example of getting some data out of the system or using it for a little demo
+   ```bash
+   mvn clean compile
+   ```
 
-## Running the tests
+3. Ejecuta el servidor:
 
-Explain how to run the automated tests for this system
+   ```bash
+   java -cp target/classes edu.escuelaing.arep.taller1.HttpServer
+   ```
 
-### Break down into end to end tests
+4. Accede al servidor desde tu navegador en [http://localhost:8080](http://localhost:8080).
 
-Explain what these tests test and why
+## Correr las pruebas 
 
-```
-Give an example
-```
+Para ejecutar las pruebas automatizadas del sistema:
 
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
+```bash
+mvn test
 ```
 
+### Break down into end-to-end tests
 
-## Built With
+Estas pruebas validan el correcto funcionamiento de las funcionalidades principales del servidor. Especificamente las peticiones GET y POST hacia el recurso /app/note (para la realización de estas se utilizo JUnit Jupiter. Una muestra de estas pruebas es: 
+```java
+    @ParameterizedTest
+    @CsvSource({
+        "'title=&group=personal&content=hola', 'Some parameters are empty'",
+        "'title=hola&group=hi&content=hola', 'Invalid group'",
+        "'title=&group=personal&content=', 'Some parameters are empty'",
+        "'title=&group=&content=', 'Some parameters are empty'"
+    })
+    void testPostNoteResponseShouldHandleErrors(String input, String expectedError) {
+        String responseByController = noteController.addNote(input);
+        StringBuilder responseThatShouldReturn = new StringBuilder();
+        responseThatShouldReturn.append("HTTP/1.1 400 Bad Request\r\n");
+        responseThatShouldReturn.append("Content-Type: application/json\r\n");
+        responseThatShouldReturn.append("{ \"error\": " + "\"" + expectedError + "\"}");
 
-* [Maven](https://maven.apache.org/) - Dependency Management
+        assertEquals(responseByController, responseThatShouldReturn.toString());
+    }
+```
+En este caso se prueban diferentes peticiones POST con diferentes parametros para la creación de una nota, estos parametros son inválidos, por lo que el controllador debe devolver una respuesta 400 y un JSON con la especificacion del error. 
 
-## Authors
+- **Resultado de las pruebas**
+![image](https://github.com/user-attachments/assets/70e8578f-a02b-43d9-b05b-1eb20416ee9f)
 
-* **Milton Andres Gutierrez Lopez** - *Initial work* - [MiltonGutierrez](https://github.com/MiltonGutierrez)
+### Estilos de código.
+
+Se utilizo el patron de diseño MVC, para poder dividir el sistema en diferentes componentes para el back -> (Controller, Service y Model) y para el front, se tuvo en cuenta la creacion de un apiclient en js para poder almacenar las peticiones a realizar. Además se tuvo en cuenta la creación de las interfaces necesarias.
+
+### Muestra de la ejecución
+
+1. Acceso al aplicativo:
+![image](https://github.com/user-attachments/assets/7942c3df-bb6f-479a-9a4c-a3da2f44ade8)
+2. Ejemplo creación de la nota
+![image](https://github.com/user-attachments/assets/a2da0022-34cf-48a0-a57e-5965e6db0b0b)
+3. Ejemplo petición de notas creadas
+![image](https://github.com/user-attachments/assets/63429968-5db6-44f2-9b22-b9d873899ce3)
+4. Ejemplo añadir nota con datos incompletos (se realiza la validación desde el cliente por lo que no se ejecuta la petición)
+![image](https://github.com/user-attachments/assets/35d2ef47-8986-4233-807f-ed11c2dd91f0)
+
+## Construido con.
+
+- [Maven](https://maven.apache.org/) - Dependency Management
+
+## Autores
+
+- **Milton Andres Gutierrez Lopez** - *Initial work* - [MiltonGutierrez](https://github.com/MiltonGutierrez)
+
+## Licencia
+
+Este proyecto está licenciado bajo la Licencia  GPL-3.0 - mira el archivo [LICENSE.md](LICENSE.md) para más detalles.
 
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
