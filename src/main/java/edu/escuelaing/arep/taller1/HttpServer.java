@@ -9,11 +9,15 @@ import java.io.*;
 
 public class HttpServer {
 
-    public static final int PORT = 35000;
+    public static final int PORT = 8080;
     public static final String WEB_ROOT = "target/classes/webroot";
     private static String INDEX_PAGE_URI = "/notes.html";
     private static boolean RUNNING = true;
     private static final NoteController noteController = new NoteControllerImpl(new NoteServicesImpl());
+
+    public static void main(String[] args) throws IOException, URISyntaxException {
+        HttpServer.runServer();
+    }
     
     public static void startServer() {
         RUNNING = true;
@@ -49,15 +53,20 @@ public class HttpServer {
         String[] parts = request.split(" ");
         String httpVerb = parts[0];
         String resource = parts[1].equals("/") ? INDEX_PAGE_URI : parts[1];
-        printRequestHeaders(in);
+        
 
         if (httpVerb.equals("GET") && !resource.startsWith("/app")) {
+            System.out.println("Peticiones de archivos");
             handleGetRequests(resource, out, dataOut);
         } else if(httpVerb.equals("GET") && resource.startsWith("/app")){
+            System.out.println("Peticiones de la aplicacion");
+            printRequestHeaders(in);
             handleAppGetRequests(resource, out);
 
         } else if (httpVerb.equals("POST") && resource.startsWith("/app")) {
-            HandleAppPostRequests(resource, out);
+            System.out.println("Peticiones de la aplicacion POST");
+            printRequestHeaders(in);
+            HandleAppPostRequests(URI.create(resource).getQuery(), out);
         } else {
             out.println("HTTP/1.1 400 Bad Request");
             out.println("Content-Type: text/html");
@@ -71,12 +80,14 @@ public class HttpServer {
     }
 
     private static void handleAppGetRequests(String resource, PrintWriter out) throws IOException {
-        String response = noteController.getNotes();
-        out.print(response);
+        
+        //String response = noteController.getNotes();
+        //out.print(response);
     }
 
-    private static void HandleAppPostRequests(String resource, PrintWriter out) throws IOException {
-        String response = noteController.addNote();
+    private static void HandleAppPostRequests(String query, PrintWriter out) throws IOException {
+        System.out.println(query);
+        String response = noteController.addNote(query);
         out.print(response);
     }
 

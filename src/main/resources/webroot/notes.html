@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Notas</title>
     <link rel="stylesheet" href="notes.css">
+    
 </head>
 <body>
-    <h1>Crear Nota</h1>
+    <h1 style="text-align: center; color: white;">Crear Nota</h1>
+
     <form id="noteForm">
         <label for="title">Título</label>
         <input type="text" id="title" name="title" placeholder="Ingresa el título" required>
@@ -20,13 +22,15 @@
             <option value="estudio">Estudio</option>
             <option value="otro">Otro</option>
         </select>
-
         <label for="content">Contenido</label>
         <textarea id="content" name="content" rows="5" placeholder="Escribe el contenido de la nota" required></textarea>
-
-        <button type="submit">Guardar Nota</button>
+        <button type="button" onclick="notes.addNote(document.getElementById('title').value,document.getElementById('group').value, document.getElementById('content').value)">Guardar Nota</button>
+        <button type="button" id="showNotesButton">Mostrar Notas</button>
     </form>
 
+    <div id="notesContainer" style="margin-top: 20px;"></div>
+
+    <script src ="apiClient.js"></script>
     <script src="notes.js"></script>
 </body>
 </html>
