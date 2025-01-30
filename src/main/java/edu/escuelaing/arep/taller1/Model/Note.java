@@ -47,4 +47,37 @@ public class Note {
         this.date = date;
     }
     
+    @Override
+    public String toString() {
+        return "Note [content=" + content + ", date=" + date + ", group=" + group + ", title=" + title + "]";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Note other = (Note) obj;
+        if (content == null) {
+            if (other.content != null)
+                return false;
+        } else if (!content.equals(other.content))
+            return false;
+        if (date == null) {
+            if (other.date != null)
+                return false;
+        } else if (!date.equals(other.date))
+            return false;
+        if (group != other.group)
+            return false;
+        if (title == null) {
+            if (other.title != null)
+                return false;
+        } else if (!title.equals(other.title))
+            return false;
+        return true;
+    }
 }

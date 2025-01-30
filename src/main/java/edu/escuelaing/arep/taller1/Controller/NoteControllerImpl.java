@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import edu.escuelaing.arep.taller1.Model.Note;
 import edu.escuelaing.arep.taller1.Model.NoteGroup;
 import edu.escuelaing.arep.taller1.Services.NoteServices;
+import edu.escuelaing.arep.taller1.Services.Exception.NoteServicesException;
 
 public class NoteControllerImpl implements NoteController {
 
@@ -44,16 +45,21 @@ public class NoteControllerImpl implements NoteController {
         String title = elements[0].substring(6); // puede mejorarse la logica
         String group = elements[1].substring(6);
         String content = elements[2].substring(8);
-        noteServices.addNote(title, NoteGroup.valueOf(group.toUpperCase()), content);
-
-        StringBuilder response = new StringBuilder();
-        response.append("HTTP/1.1 200 OK\r\n");
-        response.append("Content-Type: application/json\r\n");
-        response.append("\r\n");
-        response.append("{ \"title\": " + "\"" + title + "\", " + "\"group\": " + "\"" + group + "\", "
-                + "\"content\": " + "\"" + content + "\" " + "}");
-        return response.toString();
-
+        try {
+            noteServices.addNote(title, group, content);
+            StringBuilder response = new StringBuilder();
+            response.append("HTTP/1.1 200 OK\r\n");
+            response.append("Content-Type: application/json\r\n");
+            response.append("\r\n");
+            response.append("{ \"title\": " + "\"" + title + "\", " + "\"group\": " + "\"" + group + "\", "
+                    + "\"content\": " + "\"" + content + "\" " + "}");
+            return response.toString();
+        } catch (NoteServicesException e) {
+            StringBuilder response = new StringBuilder();
+            response.append("HTTP/1.1 400 Bad Request\r\n");
+            response.append("Content-Type: application/json\r\n");
+            response.append("{ \"error\": " + "\"" + e.getMessage() + "\"}");
+            return response.toString();
+        }
     }
-
 }

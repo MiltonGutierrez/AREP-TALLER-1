@@ -15,7 +15,7 @@ public class HttpServer {
     private static boolean RUNNING = true;
     private static final NoteController noteController = new NoteControllerImpl(new NoteServicesImpl());
 
-    public static void main(String[] args) throws IOException, URISyntaxException {
+    public static void main(String[] args) throws IOException {
         HttpServer.runServer();
     }
     
@@ -31,7 +31,7 @@ public class HttpServer {
         INDEX_PAGE_URI = uri;
     }
 
-    public static void runServer() throws IOException, URISyntaxException {
+    public static void runServer() throws IOException{
         ServerSocket serverSocket = new ServerSocket(PORT);
         while (RUNNING) {
             Socket clientSocket = null;
@@ -44,7 +44,7 @@ public class HttpServer {
         serverSocket.close();
     }
 
-    private static void handleRequests(Socket clientSocket) throws IOException, URISyntaxException {
+    private static void handleRequests(Socket clientSocket) throws IOException{
         PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
         BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         BufferedOutputStream dataOut = new BufferedOutputStream(clientSocket.getOutputStream());
@@ -54,11 +54,10 @@ public class HttpServer {
         String httpVerb = parts[0];
         String resource = parts[1].equals("/") ? INDEX_PAGE_URI : parts[1];
         
-
         if (httpVerb.equals("GET") && !resource.startsWith("/app")) {
             handleGetRequests(resource, out, dataOut);
         } else if(httpVerb.equals("GET") && resource.startsWith("/app")){
-            handleAppGetRequests(resource, out);
+            handleAppGetRequests(out);
 
         } else if (httpVerb.equals("POST") && resource.startsWith("/app")) {
             handleAppPostRequests(URI.create(resource).getQuery(), out);
@@ -74,12 +73,12 @@ public class HttpServer {
         clientSocket.close();
     }
 
-    private static void handleAppGetRequests(String resource, PrintWriter out) throws IOException {
+    private static void handleAppGetRequests(PrintWriter out) {
        String response = noteController.getNotes();
         out.print(response);
     }
 
-    private static void handleAppPostRequests(String query, PrintWriter out) throws IOException {
+    private static void handleAppPostRequests(String query, PrintWriter out){
         String response = noteController.addNote(query);
         out.print(response);
     }
@@ -129,15 +128,5 @@ public class HttpServer {
             fileIn.read(fileBytes);
         }
         return fileBytes;
-    }
-
-    private static void printRequestHeaders(BufferedReader in) throws IOException {
-        String inputLine;
-        while ((inputLine = in.readLine()) != null) {
-            System.out.println("Header: " + inputLine);
-            if (!in.ready()) {
-                break;
-            }
-        }
     }
 }
