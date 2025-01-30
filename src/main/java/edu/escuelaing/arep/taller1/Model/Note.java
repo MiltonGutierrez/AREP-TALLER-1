@@ -4,11 +4,11 @@ import java.time.LocalDate;
 
 public class Note {
     private String title;
-    private NoteGroups group;
+    private NoteGroup group;
     private String content;
     private LocalDate date;
 
-    public Note(String title, NoteGroups group, String content, LocalDate date) {
+    public Note(String title, NoteGroup group, String content, LocalDate date) {
         this.title = title;
         this.group = group;
         this.content = content;
@@ -23,11 +23,11 @@ public class Note {
         this.title = title;
     }
 
-    public NoteGroups getGroup() {
+    public NoteGroup getGroup() {
         return group;
     }
     
-    public void setGroup(NoteGroups group) {
+    public void setGroup(NoteGroup group) {
         this.group = group;
     }
 

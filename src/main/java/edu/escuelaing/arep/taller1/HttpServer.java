@@ -1,5 +1,9 @@
 package edu.escuelaing.arep.taller1;
 
+import edu.escuelaing.arep.taller1.Controller.NoteController;
+import edu.escuelaing.arep.taller1.Controller.NoteControllerImpl;
+import edu.escuelaing.arep.taller1.Services.NoteServicesImpl;
+
 import java.net.*;
 import java.io.*;
 
@@ -9,7 +13,8 @@ public class HttpServer {
     public static final String WEB_ROOT = "target/classes/webroot";
     private static String INDEX_PAGE_URI = "/notes.html";
     private static boolean RUNNING = true;
-
+    private static final NoteController noteController = new NoteControllerImpl(new NoteServicesImpl());
+    
     public static void startServer() {
         RUNNING = true;
     }
@@ -28,77 +33,74 @@ public class HttpServer {
             Socket clientSocket = null;
             clientSocket = serverSocket.accept();
 
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            BufferedOutputStream dataOut = new BufferedOutputStream(clientSocket.getOutputStream());
-
-            String request = in.readLine();
-            String[] parts = request.split(" ");
-            String httpVerb = parts[0];
-            String resource = parts[1];
-            URI resourceURI = new URI(resource);
-            printRequestHeaders(in);
-
-            if (httpVerb.equals("GET")) {
-                handleGetRequests(resource, resourceURI, out, dataOut);
-            } else if (httpVerb.equals("POST")) {
-
+            if (clientSocket != null) {
+                handleRequests(clientSocket);
             }
-            out.close();
-            in.close();
-            clientSocket.close();
         }
         serverSocket.close();
     }
 
-    
+    private static void handleRequests(Socket clientSocket) throws IOException, URISyntaxException {
+        PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+        BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        BufferedOutputStream dataOut = new BufferedOutputStream(clientSocket.getOutputStream());
 
-    public static void main(String[] args) throws IOException, URISyntaxException {
-        HttpServer.runServer();
-    }
+        String request = in.readLine();
+        String[] parts = request.split(" ");
+        String httpVerb = parts[0];
+        String resource = parts[1].equals("/") ? INDEX_PAGE_URI : parts[1];
+        printRequestHeaders(in);
 
-    private static void handleGetIndexPage(PrintWriter out, BufferedOutputStream dataOut) throws IOException {
-        File htmlPage = new File(WEB_ROOT, INDEX_PAGE_URI);
-        int pageLength = (int) htmlPage.length();
-        out.println("HTTP/1.1 200 OK");
-        out.println("Content-Type: text/html");
-        out.println("Content-Length: " + pageLength);
-        out.println();
-        out.flush();
-        byte[] fileBytes = readBytesFromFile(htmlPage, pageLength);
-        dataOut.write(fileBytes);
-        dataOut.flush();
-    }
+        if (httpVerb.equals("GET") && !resource.startsWith("/app")) {
+            handleGetRequests(resource, out, dataOut);
+        } else if(httpVerb.equals("GET") && resource.startsWith("/app")){
+            handleAppGetRequests(resource, out);
 
-    private static void handleGetRequests(String requestedResource, URI resourceURI, PrintWriter out,
-            BufferedOutputStream dataOut) throws IOException {
-        String query = resourceURI.getQuery();
-        String path = resourceURI.getPath();
-        String contentType = getContentType(requestedResource);
-        boolean isIndexPage = requestedResource.equals("/") && query == null && path.equals("/");
-        if (isIndexPage) {
-            handleGetIndexPage(out, dataOut);
+        } else if (httpVerb.equals("POST") && resource.startsWith("/app")) {
+            HandleAppPostRequests(resource, out);
         } else {
-            File resource = new File(WEB_ROOT, requestedResource);
-            if (resource.exists()) {
-                int resourceLength = (int) resource.length();
-                out.println("HTTP/1.1 200 OK");
-                out.println("Content-Type: " + contentType);
-                out.println("Content-Length: " + resourceLength);
-                out.println();
-                out.flush();
-                byte[] fileBytes = readBytesFromFile(resource, resourceLength);
-                dataOut.write(fileBytes);
-                dataOut.flush();
-            } else {
-                out.println("HTTP/1.1 404 Not Found");
-                out.println("Content-Type: text/html");
-                out.println();
-                out.println("<html><body><h1>404 Not Found</h1></body></html>");
-                out.flush();
-            }
+            out.println("HTTP/1.1 400 Bad Request");
+            out.println("Content-Type: text/html");
+            out.println();
+            out.println("<html><body><h1>400 Bad Request</h1></body></html>");
+            out.flush();
         }
+        out.close();
+        in.close();
+        clientSocket.close();
+    }
 
+    private static void handleAppGetRequests(String resource, PrintWriter out) throws IOException {
+        String response = noteController.getNotes();
+        out.print(response);
+    }
+
+    private static void HandleAppPostRequests(String resource, PrintWriter out) throws IOException {
+        String response = noteController.addNote();
+        out.print(response);
+    }
+
+
+    private static void handleGetRequests(String requestedResource, PrintWriter out, BufferedOutputStream dataOut) throws IOException {
+        String contentType = getContentType(requestedResource);
+        File resource = new File(WEB_ROOT, requestedResource);
+        if (resource.exists() && !resource.isDirectory()) {
+            int resourceLength = (int) resource.length();
+            out.println("HTTP/1.1 200 OK");
+            out.println("Content-Type: " + contentType);
+            out.println("Content-Length: " + resourceLength);
+            out.println();
+            out.flush();
+            byte[] fileBytes = readBytesFromFile(resource, resourceLength);
+            dataOut.write(fileBytes);
+            dataOut.flush();
+        } else {
+            out.println("HTTP/1.1 404 Not Found");
+            out.println("Content-Type: text/html");
+            out.println();
+            out.println("<html><body><h1>404 Not Found</h1></body></html>");
+            out.flush();
+        }
     }
 
     private static String getContentType(String requestedResource) {
