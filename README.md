@@ -123,7 +123,7 @@ Para ejecutar las pruebas automatizadas del sistema:
 mvn test
 ```
 
-### Break down into end-to-end tests
+### Pruebas 
 
 Estas pruebas validan el correcto funcionamiento de las funcionalidades principales del servidor. Especificamente las peticiones GET y POST hacia el recurso /app/note (para la realización de estas se utilizo JUnit Jupiter. Una muestra de estas pruebas es: 
 ```java
@@ -144,7 +144,83 @@ Estas pruebas validan el correcto funcionamiento de las funcionalidades principa
         assertEquals(responseByController, responseThatShouldReturn.toString());
     }
 ```
-En este caso se prueban diferentes peticiones POST con diferentes parametros para la creación de una nota, estos parametros son inválidos, por lo que el controllador debe devolver una respuesta 400 y un JSON con la especificacion del error. 
+# Descripción de las Pruebas
+
+## 1. testGetNotesResponseShouldReturnEmptyArray
+**Propósito:**  
+Verificar que el método `getNotes()` retorne una respuesta HTTP válida con un arreglo vacío cuando no hay notas registradas.
+
+**Qué prueba:**
+- Código de estado 200 OK.
+- Encabezado `Content-Type`: `application/json`.
+- Cuerpo de la respuesta como un arreglo JSON vacío (`[]`).
+
+
+## 2. testGetNotesResponseShouldReturnArrayWithCreatedNotes
+**Propósito:**  
+Validar que `getNotes()` retorne un JSON con todas las notas creadas, incluyendo sus metadatos.
+
+**Qué prueba:**
+- Formato correcto de los campos: `title`, `group`, `content`, `date`.
+- Coherencia entre las notas añadidas y las mostradas.
+- Código de estado 200 OK.
+
+
+## 3. testPostNoteResponseShouldHandleErrors
+**Propósito:**  
+Garantizar que el controlador maneje errores en solicitudes POST con parámetros inválidos.
+
+**Qué prueba:**
+- Respuestas 400 Bad Request para casos como:
+  - Parámetros vacíos (`title=`, `group=`, `content=`).
+  - Grupos no permitidos (ej: `group=hi`).
+  - Mensajes de error claros en formato JSON (ej: `{"error": "Some parameters are empty"}`).
+
+## 4. testPostNoteResponseShouldReturnNote
+**Propósito:**  
+Asegurar que una solicitud POST válida retorne la nota creada en formato JSON.
+
+**Qué prueba:**
+- Código de estado 200 OK.
+- Coincidencia exacta entre los campos enviados (`title`, `group`, `content`) y los devueltos.
+
+## 5. shouldThrowNotesServicesExceptionSomeParametersAreEmpty
+**Propósito:**  
+Validar que el servicio rechace parámetros vacíos lanzando `NoteServicesException`.
+
+**Qué prueba:**
+- Escenarios como:
+  - Todos los campos vacíos.
+  - Campos parcialmente vacíos (`title=`, `group=work`, `content=`).
+
+## 6. shouldThrowNotesServicesExceptionInvalidGroup
+**Propósito:**  
+Comprobar que el servicio solo permita grupos predefinidos (`personal` o `work`).
+
+**Qué prueba:**
+- Lanzamiento de excepciones para grupos no válidos (ej: `invalid`, `personal1`).
+
+
+## 7. shouldAddNotes
+**Propósito:**  
+Confirmar que el servicio añade notas correctamente cuando los parámetros son válidos.
+
+**Qué prueba:**
+- Incremento del tamaño de la lista de notas después de agregar elementos.
+- Ausencia de excepciones en casos válidos.
+
+
+## Ejemplo Adicional: testGetContentTypeHtml
+**Propósito:**  
+Verificar que el método `getContentType` retorne el tipo MIME correcto para archivos HTML.
+
+**Qué prueba:**
+- Que `getContentType("index.html")` retorne `text/html`.
+
+
+# Tecnologías Usadas en Pruebas
+- **JUnit 5:** Para pruebas unitarias y parametrizadas.
+- **Maven:** Gestión de dependencias y ejecución de pruebas.
 
 - **Resultado de las pruebas**
 ![image](https://github.com/user-attachments/assets/70e8578f-a02b-43d9-b05b-1eb20416ee9f)
