@@ -41,6 +41,34 @@ Pasos para configurar el entorno de desarrollo:
 
 4. Accede al servidor desde tu navegador en [http://localhost:8080](http://localhost:8080).
 
+## Arquitectura
+
+El siguiente diagrama de componentes describe la estructura básica de la aplicación, basada en el patrón **MVC (Modelo-Vista-Controlador)**:
+
+![Diagrama de Componentes](https://github.com/user-attachments/assets/eee00a43-a0a6-4dd5-8275-761dd3be784d)
+
+### Componentes Principales:
+1. **Browser (Navegador)**:
+   - **Puerto 8080**: Punto de entrada para las solicitudes HTTP.
+   - **HttpServer**: Servidor web básico en Java que maneja solicitudes y respuestas HTTP.
+   - **Controller**: Procesa las peticiones del endpoint de /app, valida datos y coordina la interacción entre el servidor y los servicios.
+
+2. **Services (Lógica de Negocio)**:
+   - **Services**: Implementan la lógica para operaciones CRUD de notas (crear, leer).
+   - **Model**: Define la estructura de datos.
+
+### Flujo de la Aplicación:
+1. El navegador envía solicitudes al `HttpServer` (puerto 8080) este procesa la peticion de archivos HTML, CSS, JS e imagenes..
+2. El `Controller` recibe las solicitudes del endpoint /app, valida los parámetros y delega la lógica a los `Services` creando al final la respuesta.
+3. Los `Services` interactúan con el `Model` para acceder a la estructura de datos de modo que pueda responder a la petición..
+4. El `Controller` genera respuestas HTTP (éxito o error) que el `HttpServer` envía al navegador.
+
+
+
+### Validaciones y Pruebas:
+- Se implementaron pruebas automatizadas con **JUnit** para validar solicitudes `GET`/`POST`, incluyendo manejo de errores (ej: parámetros inválidos devuelven código `400` y JSON con detalles).
+- El cliente incluye validaciones frontend para evitar enviar datos incompletos.
+
 ## Correr las pruebas 
 
 Para ejecutar las pruebas automatizadas del sistema:
@@ -75,9 +103,6 @@ En este caso se prueban diferentes peticiones POST con diferentes parametros par
 - **Resultado de las pruebas**
 ![image](https://github.com/user-attachments/assets/70e8578f-a02b-43d9-b05b-1eb20416ee9f)
 
-### Estilos de código.
-
-Se utilizo el patron de diseño MVC, para poder dividir el sistema en diferentes componentes para el back -> (Controller, Service y Model) y para el front, se tuvo en cuenta la creacion de un apiclient en js para poder almacenar las peticiones a realizar. Además se tuvo en cuenta la creación de las interfaces necesarias.
 
 ### Muestra de la ejecución
 
