@@ -247,6 +247,6 @@ Verificar que el método `getContentType` retorne el tipo MIME correcto para arc
 
 ## Licencia
 
-Este proyecto está licenciado bajo la Licencia  GPL-3.0 - mira el archivo [LICENSE.md](LICENSE.md) para más detalles.
+Este proyecto está licenciado bajo la Licencia GNU - mira el archivo [LICENSE.md](LICENSE.md) para más detalles.
 
 
