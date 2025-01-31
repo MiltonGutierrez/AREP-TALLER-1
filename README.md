@@ -63,6 +63,52 @@ El siguiente diagrama de componentes describe la estructura básica de la aplica
 3. Los `Services` interactúan con el `Model` para acceder a la estructura de datos de modo que pueda responder a la petición..
 4. El `Controller` genera respuestas HTTP (éxito o error) que el `HttpServer` envía al navegador.
 
+### Diagrama de Clases y Explicación
+Se presentara el diagrama de clases que describe los metodos y las dependencias entre las clases existentes para cada componente del backend.
+
+![image](https://github.com/user-attachments/assets/58f85cae-179b-48fb-8f53-9fa7ea594f1b)
+
+#### Componentes Principales:
+1. **Clase `HttpServer`**:
+   - **Responsabilidad**: Núcleo del servidor web. Escucha en el puerto definido (`PORT`), gestiona conexiones entrantes y delega solicitudes.
+   - **Atributos Clave**:
+     - `PORT`: Puerto de escucha (ej: `8080`).
+     - `WEB_ROOT`: Ruta de archivos estáticos (HTML, CSS, JS).
+     - `noteController`: Controlador para operaciones con notas.
+   - **Métodos Destacados**:
+     - `runServer()`: Inicia el servidor y acepta conexiones.
+     - `handleRequests()`: Dirige solicitudes a métodos específicos (GET/POST) .
+     - `handleGetRequests()`: Retorna archivos estáticos que se encuentran en el webroot del servidor (ej: `notes.html`).
+
+2. **Controladores**:
+   - **Interfaz `NoteController`**:
+     - Define métodos como `getNotes()` para obtener notas y `addtNote()` para crear notas.
+   - **Clase `NoteControllerImpl`**:
+     - Implementa la interfaz y utiliza `NoteServices` para acceder a la lógica de negocio.
+     - **Dependencia**: `NoteServices` (inyección de servicios).
+
+3. **Servicios**:
+   - **Interfaz `NoteServices`**:
+     - Define operaciones como `addNote()` y `getNotes()`.
+   - **Clase `NoteServicesImpl`**:
+     - Implementa la interfaz y gestiona una lista de notas (`notes`).
+     - **Atributo**: `notes` (almacenamiento temporal en memoria).
+
+4. **Modelo**:
+   - **Clase `Note`**:
+     - Representa una nota con atributos: `title`, `group`, `content`, `date`.
+     - **Nota**: `date` sugiere el uso de `LocalDate` para manejar fechas.
+
+#### Flujo de una Solicitud:
+1. **Cliente → `HttpServer`**:  
+   El navegador envía una solicitud (ej: `POST /app/notes` con parámetros).
+2. **`HttpServer` → `NoteController`**:  
+   El servidor detecta rutas bajo `/app` y delega al controlador.
+3. **`NoteController` → `NoteServices`**:  
+   El controlador valida los datos y usa el servicio para agregar/retornar notas.
+4. **Respuesta HTTP**:  
+   - Éxito: `200 OK` con JSON de notas.  
+   - Error: `400 Bad Request` con mensaje descriptivo (ej: parámetros inválidos).
 
 
 ### Validaciones y Pruebas:
